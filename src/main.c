@@ -24,8 +24,6 @@ int species_count = 0;
 void main_menu();
 void create_new_dataset();
 void load_dataset_menu();
-void edit_dataset_menu();
-void estimate_menu();
 void help_menu();
 void clear_screen();
 void pause_screen();
@@ -145,103 +143,50 @@ void create_new_dataset() {
 
 // LOAD DATASET MENU
 void load_dataset_menu() {
-    int back = 0;
+    int choice;
 
-    while (!back) {
+    while (1) {
         clear_screen();
         printf("=== LOAD DATASET ===\n");
-        printf("[1] Species 1\n");
-        printf("[2] Species 2\n");
+
+        if (species_count == 0) {
+            printf("No datasets available.\n");
+            pause_screen();
+            return;
+        }
+
+        for (int i = 0; i < species_count; i++) {
+            printf("[%d] %s\n", i + 1, species_list[i].species_name);
+        }
+
         printf("[0] Back to Main Menu\n");
 
         printf("\nEnter choice: ");
-        int choice;
         scanf("%d", &choice);
 
-        switch (choice) {
-            case 1:
-                printf("Loading species 1...\n");
-                getchar(); getchar();
-                break;
-            case 2:
-                printf("Loading species 2...\n");
-                getchar(); getchar();
-                break;
-            case 0:
-                back = 1;
-                break;
-            default:
-                printf("Invalid choice.\n");
-                getchar(); getchar();
+        if (choice == 0) {
+            return;
         }
-    }
-}
 
-// EDIT DATASET MENU
-void edit_dataset_menu() {
-    int back = 0;
+        if (choice < 1 || choice > species_count) {
+            printf("Invalid choice.\n");
+            pause_screen();
+            continue;
+        }
 
-    while (!back) {
+        Species *sp = &species_list[choice - 1];
+
         clear_screen();
-        printf("=== EDIT DATASET ===\n");
-        printf("[1] Modify data\n");
-        printf("[2] Delete data\n");
-        printf("[0] Back to Main Menu\n");
+        printf("=== DATASET: %s ===\n", sp->species_name);
+        printf("Data Points: %d\n\n", sp->data_count);
 
-        printf("\nEnter choice: ");
-        int choice;
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                printf("Modify data...\n");
-                getchar(); getchar();
-                break;
-            case 2:
-                printf("Delete data...\n");
-                getchar(); getchar();
-                break;
-            case 0:
-                back = 1;
-                break;
-            default:
-                printf("Invalid choice.\n");
-                getchar(); getchar();
+        for (int i = 0; i < sp->data_count; i++) {
+            printf("Data Point %d: Temperature = %.2f C, Hatching Time = %.2f hrs\n",
+                   i + 1, sp->data_points[i].temperature, sp->data_points[i].hatch_time);
         }
-    }
-}
 
-// ESTIMATE MENU
-void estimate_menu() {
-    int back = 0;
-
-    while (!back) {
-        clear_screen();
-        printf("=== ESTIMATE HATCH TIME ===\n");
-        printf("[1] Get hatching time from temperature\n");
-        printf("[2] Get required temperature\n");
-        printf("[0] Back to Main Menu\n");
-
-        printf("\nEnter choice: ");
-        int choice;
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                printf("Estimating hatching time...\n");
-                getchar(); getchar();
-                break;
-            case 2:
-                printf("Estimating required temperature...\n");
-                getchar(); getchar();
-                break;
-            case 0:
-                back = 1;
-                break;
-            default:
-                printf("Invalid choice.\n");
-                getchar(); getchar();
-        }
+        printf("\nPress Enter to go back...");
+        getchar(); getchar();
     }
 }
 

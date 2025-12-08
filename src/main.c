@@ -24,6 +24,7 @@ int species_count = 0;
 void main_menu();
 void create_new_dataset();
 void load_dataset_menu();
+void species_submenu();
 void help_menu();
 void clear_screen();
 void pause_screen();
@@ -136,7 +137,6 @@ void create_new_dataset() {
     }
 }
 
-
 // LOAD DATASET MENU
 void load_dataset_menu() {
     int choice;
@@ -154,15 +154,12 @@ void load_dataset_menu() {
         for (int i = 0; i < species_count; i++) {
             printf("[%d] %s\n", i + 1, species_list[i].species_name);
         }
-
         printf("[0] Back to Main Menu\n");
 
         printf("\nEnter choice: ");
         scanf("%d", &choice);
 
-        if (choice == 0) {
-            return;
-        }
+        if (choice == 0) return;
 
         if (choice < 1 || choice > species_count) {
             printf("Invalid choice.\n");
@@ -170,20 +167,96 @@ void load_dataset_menu() {
             continue;
         }
 
-        Species *sp = &species_list[choice - 1];
-
-        clear_screen();
-        printf("=== DATASET: %s ===\n", sp->species_name);
-        printf("Data Points: %d\n\n", sp->data_count);
-
-        for (int i = 0; i < sp->data_count; i++) {
-            printf("Data Point %d: Temperature = %.2f C, Hatching Time = %.2f hrs\n",
-                   i + 1, sp->data_points[i].temperature, sp->data_points[i].hatch_time);
-        }
-
-        printf("\nPress Enter to go back...");
-        getchar(); getchar();
+        // Directly open submenu for chosen species
+        species_submenu(&species_list[choice - 1]);
     }
+}
+
+// SPECIES SUBMENU
+void species_submenu(Species *sp) {
+    int choice;
+
+    while (1) {
+        clear_screen();
+        printf("=== SPECIE: %s ===\n", sp->species_name);
+        printf("[1] Get Hatching Time \n");
+        printf("[2] Het Required Temperature\n");
+        printf("[3] Add Data Point\n");
+        printf("[4] View Data\n");
+        printf("[0] Back to Load Dataset Menu\n");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1: {
+                float temp;
+                printf("Enter Temperature (C): ");
+                scanf("%f", &temp);
+
+                // Placeholder - implement interpolation/extrapolation logic here
+                printf("Estimated Hatching Time at %.2f C: [IMPLEMENT LOGIC] hrs\n", temp);
+                pause_screen();
+                break;
+            }
+
+            case 2: {
+                float hatch_time;
+                printf("Enter Desired Hatching Time (hrs): ");
+                scanf("%f", &hatch_time);
+
+                // Placeholder - implement reverse interpolation/extrapolation logic here
+                printf("Required Temperature for %.2f hrs: [IMPLEMENT LOGIC] C\n", hatch_time);     // IMPLEMENT LOGIC KAY MAO NANG COMPUTED VALUE
+                pause_screen();
+                break;
+            }
+
+            case 3: {
+                if (sp->data_count >= MAX_POINTS) {
+                    printf("Maximum data points reached.\n");
+                    pause_screen();
+                    break;
+                }
+
+                float temp, hatch_time;
+                printf("Enter Temperature (C): ");
+                scanf("%f", &temp);
+                printf("Enter Hatching Time (hrs): ");
+                scanf("%f", &hatch_time);
+
+                sp->data_points[sp->data_count].temperature = temp;
+                sp->data_points[sp->data_count].hatch_time = hatch_time;
+                sp->data_count++;
+
+                printf("Data point added/updated.\n");
+                pause_screen();
+                break;
+            }
+
+            case 4: {
+                clear_screen();
+                printf("=== DATASET: %s ===\n", sp->species_name);
+
+                if (sp->data_count == 0) {
+                    printf("No data points available.\n");
+                } else {
+                    for (int i = 0; i < sp->data_count; i++) {
+                        printf("[%d] : Temperature = %.2f C, Hatching Time = %.2f hrs\n",
+                               i + 1, sp->data_points[i].temperature, sp->data_points[i].hatch_time);
+                    }
+                }
+
+                pause_screen();
+                break;
+            }
+
+            case 0:
+                return;
+
+            default:
+                printf("Invalid choice.\n");
+                pause_screen();
+        }
+    }
+    
 }
 
 // HELP MENU

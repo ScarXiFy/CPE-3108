@@ -1,6 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
+#define MAX_SPECIES 50      // Maximum number of species (can be adjusted)
+#define MAX_POINTS 100     // Maximum data points per species (can be adjusted)
+
+typedef struct {
+    float temperature;
+    float hatch_time;
+} DataPoint;
+
+typedef struct {
+    char species_name[50];
+    DataPoint data_points[MAX_POINTS];
+    int data_count;
+} Species;
+
+// GLOBAL DATA STORAGE
+Species species_list[MAX_SPECIES];
+int species_count = 0;
+
+// FUNCTION PROTOTYPES
+void main_menu();
+void create_new_dataset();
+void load_dataset_menu();
+void edit_dataset_menu();
+void estimate_menu();
+void help_menu();
+void clear_screen();
+void pause_screen();
+
+// MAIN FUNCTION
 int main() {
     int choice;
 
@@ -11,7 +41,7 @@ int main() {
         scanf("%d", &choice);
 
         switch (choice) {
-            case 1: create_dataset_menu(); break;
+            case 1: create_new_dataset(); break;
             case 2: load_dataset_menu(); break;
             case 3: edit_dataset_menu(); break;
             case 4: estimate_menu(); break;
@@ -28,43 +58,90 @@ int main() {
     return 0;
 }
 
-// --- SUBMENUS ------------------------------------------------------
+// MAIN MENU
+void main_menu() {
+    printf("=====================================\n");
+    printf("       ADAPTIVE HATCH ESTIMATOR      \n");
+    printf("=====================================\n");
+    printf(" [1] Create New Dataset\n");
+    printf(" [2] Load Existing Dataset\n");
+    printf(" [3] Edit Dataset\n");
+    printf(" [4] Estimate Hatch Time\n");
+    printf(" [5] Help\n");
+    printf(" [0] Exit\n");
+    printf("=====================================\n");
+}
 
-// CREATE DATASET MENU
-void create_dataset_menu() {
-    int back = 0;
+// ------------------------------------------------------ SUBMENUS ------------------------------------------------------
 
-    while (!back) {
+// CREATE NEW DATASET
+void create_new_dataset() {
+    int choice;
+
+    while (1) {
         clear_screen();
         printf("=== CREATE NEW DATASET ===\n");
-        printf("[1] Enter species name\n");
-        printf("[2] Enter data points\n");
+        printf("[1] Start new dataset\n");
         printf("[0] Back to Main Menu\n");
-
         printf("\nEnter choice: ");
-        int choice;
         scanf("%d", &choice);
 
-        switch (choice) {
-            case 1:
-                printf("Enter species name: ");
-                // TODO
-                getchar(); getchar();
-                break;
-            case 2:
-                printf("Enter data points...\n");
-                // TODO
-                getchar(); getchar();
-                break;
-            case 0:
-                back = 1;
-                break;
-            default:
-                printf("Invalid choice.\n");
-                getchar(); getchar();
+        if (choice == 0) {
+            return;
         }
+
+        if (choice != 1) {
+            printf("Invalid choice.\n");
+            pause_screen();
+            continue;
+        }
+
+        // ========== START DATASET CREATION PROCESS ==========
+
+        if (species_count >= MAX_SPECIES) {
+            printf("Maximum species limit reached.\n");
+            pause_screen();
+            return;
+        }
+
+        Species *sp = &species_list[species_count];
+
+        printf("Enter species name: ");
+        getchar();
+        fgets(sp->species_name, sizeof(sp->species_name), stdin);
+        sp->species_name[strcspn(sp->species_name, "\n")] = 0;
+
+        int n;
+        printf("Enter number of data points: ");
+        scanf("%d", &n);
+
+        if (n < 1 || n > MAX_POINTS) {
+            printf("Invalid number of data points.\n");
+            pause_screen();
+            continue;
+        }
+
+        sp->data_count = 0;
+
+        for (int i = 0; i < n; i++) {
+            printf("\n--- Data Point %d ---\n", i + 1);
+            printf("  Temperature (C): ");
+            scanf("%f", &sp->data_points[i].temperature);
+            printf("  Hatching Time (hrs): ");
+            scanf("%f", &sp->data_points[i].hatch_time);
+
+            sp->data_count++;
+        }
+
+        species_count++;
+        printf("\nDataset for '%s' created with %d data points.\n",
+               sp->species_name, sp->data_count);
+
+        pause_screen();
+        return;
     }
 }
+
 
 // LOAD DATASET MENU
 void load_dataset_menu() {
@@ -200,19 +277,4 @@ void clear_screen() {
 void pause_screen() {
     printf("Press Enter to continue...");
     getchar(); getchar();
-}
-
-
-// MAIN MENU
-void main_menu() {
-    printf("=====================================\n");
-    printf("       ADAPTIVE HATCH ESTIMATOR      \n");
-    printf("=====================================\n");
-    printf(" [1] Create New Dataset\n");
-    printf(" [2] Load Existing Dataset\n");
-    printf(" [3] Edit Dataset\n");
-    printf(" [4] Estimate Hatch Time\n");
-    printf(" [5] Help\n");
-    printf(" [0] Exit\n");
-    printf("=====================================\n");
 }

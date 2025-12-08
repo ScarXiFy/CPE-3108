@@ -41,9 +41,7 @@ int main() {
         switch (choice) {
             case 1: create_new_dataset(); break;
             case 2: load_dataset_menu(); break;
-            case 3: edit_dataset_menu(); break;
-            case 4: estimate_menu(); break;
-            case 5: help_menu(); break;
+            case 3: help_menu(); break;
             case 0:
                 printf("Exiting...\n");
                 return 0;
@@ -63,9 +61,7 @@ void main_menu() {
     printf("=====================================\n");
     printf(" [1] Create New Dataset\n");
     printf(" [2] Load Existing Dataset\n");
-    printf(" [3] Edit Dataset\n");
-    printf(" [4] Estimate Hatch Time\n");
-    printf(" [5] Help\n");
+    printf(" [3] Help\n");
     printf(" [0] Exit\n");
     printf("=====================================\n");
 }

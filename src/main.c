@@ -1,22 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include "func.h"
 #define MAX_SPECIES 50      // Maximum number of species (can be adjusted)
-#define MAX_POINTS 100     // Maximum data points per species (can be adjusted)
+  // Maximum data points per species (can be adjusted)
 
-typedef struct {
-    float temperature;
-    float hatch_time;
-} DataPoint;
 
-typedef struct {
-    char species_name[50];
-    float min_temp;
-    float max_temp;
-    DataPoint data_points[MAX_POINTS];
-    int data_count;
-} Species;
 
 // GLOBAL DATA STORAGE
 Species species_list[MAX_SPECIES];
@@ -31,6 +20,7 @@ void help_menu();
 void clear_screen();
 void pause_screen();
 void clear_input_buffer();
+int sort_temps(const void* a, const void* b);
 
 // MAIN FUNCTION
 int main() {
@@ -177,13 +167,13 @@ void create_new_dataset() {
     int n;
     valid_input = 0;
     while (!valid_input) {
-        printf("\nEnter number of data points: ");
+        printf("\nEnter number of data points: ");                      //EDIT: MAKE SURE THE USER ENTERS at least 4 data points initiallly
         if (fgets(input_buffer, sizeof(input_buffer), stdin) != NULL) {
             if (sscanf(input_buffer, "%d", &n) == 1) {
-                if (n >= 1 && n <= MAX_POINTS) {
+                if (n >= 4 && n <= MAX_POINTS) {
                     valid_input = 1;
                 } else {
-                    printf("Invalid number. Please enter a value between 1 and %d.\n", MAX_POINTS);
+                    printf("Invalid number. Please enter a value between 4 and %d.\n", MAX_POINTS);
                 }
             } else {
                 printf("Invalid input. Please enter a numeric value.\n");
@@ -238,7 +228,7 @@ void create_new_dataset() {
         sp->data_points[i].hatch_time = h;
         sp->data_count++;
     }
-
+    qsort(sp->data_points, sp->data_count, sizeof(DataPoint), sort_temps);
     species_count++;
 
     printf("\n\nDataset for '%s' created successfully.\n", sp->species_name);
@@ -364,7 +354,8 @@ void species_submenu(Species *sp) {
                         }
                     }
                 }
-
+                double value;
+                //value = lagrange_calc(sp, temp);
                 // Placeholder - implement interpolation/extrapolation logic here
                 printf("Estimated Hatching Time at %.2f C: [IMPLEMENT LOGIC] hrs\n", temp);
                 pause_screen();
@@ -449,7 +440,9 @@ void species_submenu(Species *sp) {
                 // Add the data point
                 sp->data_points[sp->data_count].temperature = temp;
                 sp->data_points[sp->data_count].hatch_time = hatch_time;
-                sp->data_count++;
+                sp->data_count++;                                           // EDIT: ONLY DATA COUNT ++ IF TEMPERATURE DOESNT ALREADY EXIST IN DATA SET
+
+                qsort(sp->data_points, sp->data_count, sizeof(DataPoint), sort_temps);
 
                 printf("\nData point added successfully!\n");
                 printf("Temperature: %.2f C, Hatching Time: %.2f hrs\n", temp, hatch_time);
@@ -540,4 +533,15 @@ void pause_screen() {
         // Handle EOF or error
         clear_input_buffer();
     }
+}
+
+int sort_temps(const void* a, const void* b) {
+    float temp1 = ((DataPoint*)a)->temperature;
+    float temp2 = ((DataPoint*)b)->temperature;
+    if (temp1 > temp2)
+        return 1;
+    else if (temp2 > temp1)
+        return -1;
+    else
+        return 0;
 }

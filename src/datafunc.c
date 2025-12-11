@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 // Helper function to check if temperature already exists in dataset
 static int find_existing_temp_index(Species *sp, float temp) {
@@ -9,6 +10,18 @@ static int find_existing_temp_index(Species *sp, float temp) {
         }
     }
     return -1; // Temperature doesn't exist
+}
+
+// Helper function to sort data points by temperature
+int sort_temps(const void* a, const void* b) {
+    float temp1 = ((DataPoint*)a)->temperature;
+    float temp2 = ((DataPoint*)b)->temperature;
+    if (temp1 > temp2)
+        return 1;
+    else if (temp2 > temp1)
+        return -1;
+    else
+        return 0;
 }
 
 // CREATE NEW DATASET
@@ -191,6 +204,8 @@ void create_new_dataset(void) {
         }
     }
 
+    qsort(sp->data_points, sp->data_count, sizeof(DataPoint), sort_temps);
+
     species_count++;
 
     printf("\n\nDataset for '%s' created successfully.\n", sp->species_name);
@@ -318,7 +333,8 @@ void species_submenu(Species *sp) {
                 }
 
                 // Placeholder - implement interpolation/extrapolation logic here
-                printf("Estimated Hatching Time at %.2f C: [IMPLEMENT LOGIC] hrs\n", temp);
+                float res_time = lagrange_calc(sp, temp, 1);
+                printf("\nEstimated Hatching Time at %.2f C: %.2f hrs\n", temp, res_time);
                 pause_screen();
                 break;
             }
@@ -342,7 +358,10 @@ void species_submenu(Species *sp) {
                 }
 
                 // Placeholder - implement reverse interpolation/extrapolation logic here
-                printf("Required Temperature for %.2f hrs: [IMPLEMENT LOGIC] C\n", hatch_time);
+                float req_temp = lagrange_calc(sp, hatch_time, 2);
+                printf("\nRequired Temperature for %.2f hrs: %.2f C", hatch_time, req_temp);
+                if (req_temp > sp->max_temp || req_temp < sp->min_temp)
+                    printf("\tWARNING: Calculated required temperature is beyond set threshold. Usage is not recommended.\n");
                 pause_screen();
                 break;
             }
@@ -429,7 +448,7 @@ void species_submenu(Species *sp) {
                     printf("\nData point added successfully!\n");
                     printf("Temperature: %.2f C, Hatching Time: %.2f hrs (new)\n", temp, hatch_time);
                 }
-                
+                qsort(sp->data_points, sp->data_count, sizeof(DataPoint), sort_temps);
                 printf("Total data points: %d\n", sp->data_count);
                 pause_screen();
                 break;

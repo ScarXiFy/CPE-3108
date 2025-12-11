@@ -35,5 +35,6 @@ void help_menu(void);
 void clear_screen(void);
 void pause_screen(void);
 void clear_input_buffer(void);
+float lagrange_calc(Species *sp, float unknown_x, int mode);
 
 #endif // MAIN_H

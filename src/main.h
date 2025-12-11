@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #define MAX_SPECIES 50      // Maximum number of species (can be adjusted)
 #define MAX_POINTS 100     // Maximum data points per species (can be adjusted)

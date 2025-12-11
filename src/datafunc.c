@@ -1,5 +1,16 @@
 #include "main.h"
 
+// Helper function to check if temperature already exists in dataset
+static int find_existing_temp_index(Species *sp, float temp) {
+    for (int i = 0; i < sp->data_count; i++) {
+        // Compare with small epsilon for floating point comparison
+        if (fabs(sp->data_points[i].temperature - temp) < 0.001) {
+            return i; // Return index if temperature already exists
+        }
+    }
+    return -1; // Temperature doesn't exist
+}
+
 // CREATE NEW DATASET
 void create_new_dataset(void) {
     clear_screen();
@@ -88,13 +99,13 @@ void create_new_dataset(void) {
     int n;
     valid_input = 0;
     while (!valid_input) {
-        printf("\nEnter number of data points: ");
+        printf("\nEnter number of data points (minimum 4): ");
         if (fgets(input_buffer, sizeof(input_buffer), stdin) != NULL) {
             if (sscanf(input_buffer, "%d", &n) == 1) {
-                if (n >= 1 && n <= MAX_POINTS) {
+                if (n >= 4 && n <= MAX_POINTS) {
                     valid_input = 1;
                 } else {
-                    printf("Invalid number. Please enter a value between 1 and %d.\n", MAX_POINTS);
+                    printf("Invalid number. Please enter a value between 4 and %d.\n", MAX_POINTS);
                 }
             } else {
                 printf("Invalid input. Please enter a numeric value.\n");
@@ -116,8 +127,28 @@ void create_new_dataset(void) {
             printf("  Enter Temperature (C): ");
             if (fgets(input_buffer, sizeof(input_buffer), stdin) != NULL) {
                 if (sscanf(input_buffer, "%f", &t) == 1) {
+                    // Check if temperature is within threshold
                     if (t >= sp->min_temp && t <= sp->max_temp) {
-                        valid_input = 1;
+                        // Check if temperature already exists
+                        int existing_index = find_existing_temp_index(sp, t);
+                        if (existing_index != -1) {
+                            printf("  WARNING: Temperature %.2f C already exists at index %d.\n", t, existing_index + 1);
+                            printf("  Current value: %.2f hrs\n", sp->data_points[existing_index].hatch_time);
+                            printf("  Do you want to replace it? (y/n): ");
+                            
+                            char response[10];
+                            if (fgets(response, sizeof(response), stdin) != NULL) {
+                                if (response[0] == 'y' || response[0] == 'Y') {
+                                    // We'll update this point later
+                                    valid_input = 1;
+                                    i--; // Stay on same data point index
+                                } else {
+                                    printf("  Please enter a different temperature.\n");
+                                }
+                            }
+                        } else {
+                            valid_input = 1;
+                        }
                     } else {
                         printf("  ERROR: Temperature must be between %.2f and %.2f C.\n",
                                sp->min_temp, sp->max_temp);
@@ -128,6 +159,9 @@ void create_new_dataset(void) {
             }
         }
 
+        // Check again for existing temperature (in case user chose to replace)
+        int existing_index = find_existing_temp_index(sp, t);
+        
         // Input for hatch time
         valid_input = 0;
         while (!valid_input) {
@@ -145,9 +179,16 @@ void create_new_dataset(void) {
             }
         }
 
-        sp->data_points[i].temperature = t;
-        sp->data_points[i].hatch_time = h;
-        sp->data_count++;
+        if (existing_index != -1) {
+            // Replace existing data point
+            sp->data_points[existing_index].hatch_time = h;
+            printf("  Updated existing data point at temperature %.2f C\n", t);
+        } else {
+            // Add new data point
+            sp->data_points[sp->data_count].temperature = t;
+            sp->data_points[sp->data_count].hatch_time = h;
+            sp->data_count++;
+        }
     }
 
     species_count++;
@@ -340,6 +381,23 @@ void species_submenu(Species *sp) {
                     }
                 }
 
+                // Check if temperature already exists
+                int existing_index = find_existing_temp_index(sp, temp);
+                if (existing_index != -1) {
+                    printf("Temperature %.2f C already exists in dataset.\n", temp);
+                    printf("Current hatching time: %.2f hrs\n", sp->data_points[existing_index].hatch_time);
+                    printf("Do you want to update it? (y/n): ");
+                    
+                    char response[10];
+                    if (fgets(response, sizeof(response), stdin) != NULL) {
+                        if (response[0] != 'y' && response[0] != 'Y') {
+                            printf("Data point not added.\n");
+                            pause_screen();
+                            break;
+                        }
+                    }
+                }
+
                 // Hatching time input
                 valid_input = 0;
                 while (!valid_input) {
@@ -357,13 +415,21 @@ void species_submenu(Species *sp) {
                     }
                 }
 
-                // Add the data point
-                sp->data_points[sp->data_count].temperature = temp;
-                sp->data_points[sp->data_count].hatch_time = hatch_time;
-                sp->data_count++;
-
-                printf("\nData point added successfully!\n");
-                printf("Temperature: %.2f C, Hatching Time: %.2f hrs\n", temp, hatch_time);
+                // Add or update the data point
+                if (existing_index != -1) {
+                    // Update existing data point
+                    sp->data_points[existing_index].hatch_time = hatch_time;
+                    printf("\nData point updated successfully!\n");
+                    printf("Temperature: %.2f C, Hatching Time: %.2f hrs (updated)\n", temp, hatch_time);
+                } else {
+                    // Add new data point
+                    sp->data_points[sp->data_count].temperature = temp;
+                    sp->data_points[sp->data_count].hatch_time = hatch_time;
+                    sp->data_count++;
+                    printf("\nData point added successfully!\n");
+                    printf("Temperature: %.2f C, Hatching Time: %.2f hrs (new)\n", temp, hatch_time);
+                }
+                
                 printf("Total data points: %d\n", sp->data_count);
                 pause_screen();
                 break;

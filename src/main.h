@@ -35,9 +35,6 @@ void help_menu(void);
 void clear_screen(void);
 void pause_screen(void);
 void clear_input_buffer(void);
-<<<<<<< HEAD
-=======
 float lagrange_calc(Species *sp, float unknown_x, int mode);
->>>>>>> mileah
 
 #endif // MAIN_H

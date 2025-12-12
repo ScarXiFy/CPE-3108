@@ -45,8 +45,8 @@ void help_menu(void) {
     while (1) {
         clear_screen();
         printf("=== HELP ===\n");
-        printf("This program estimates fish egg hatching time.\n");
-        printf("Uses interpolation and extrapolation.\n\n");
+        printf("This program estimates fish egg hatching time and temperature.\n");
+        printf("Uses interpolation and extrapolation using Lagrange method to estimate the values.\n\n");
         printf("[0] Back to Main Menu\n");
 
         int valid_input = 0;

@@ -176,8 +176,8 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
                 if (numOfPoints > sp->data_count) {
                     printf("Invalid input, not enough data points. Please enter a number less than or equal to %d.\n", sp->data_count);
                 }
-                else if (numOfPoints < 4) {
-                    printf("Invalid input. Please enter a number greater than or equal to 4.\n");
+                else if (numOfPoints < 2) {
+                    printf("Invalid input. Please enter a number greater than or equal to 2.\n");
                 } else {
                     valid_input = 1;
                 }

@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 // Helper function to check if temperature already exists in dataset
 static int find_existing_temp_index(Species *sp, float temp) {

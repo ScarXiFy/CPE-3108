@@ -169,7 +169,7 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
     int valid_input = 0;
 
     while (!valid_input) {
-        printf("Enter number of data points to use in calculation (at least 4): "); 
+        printf("Enter number of data points to use in calculation (at least 2): "); 
         fgets(buffer, sizeof(buffer), stdin);
         if (sscanf(buffer, "%d", &numOfPoints) == 1) {
             if (sscanf(buffer, "%d", &numOfPoints) == 1) {
@@ -202,9 +202,9 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
     printf("\n\n--------DATA POINTS TO BE USED--------\n");
     for(int i=0; i<numOfPoints; i++){
         if(mode==1)
-            printf("x(i) = %.2f, y(i) = %.2f\n", dataPoints[i].temperature, dataPoints[i].hatch_time);
+            printf("x(%d) = %.2f, y(%d) = %.2f\n", i, dataPoints[i].temperature, i, dataPoints[i].hatch_time);
         else
-            printf("x(i) = %.2f, y(i) = %.2f\n", dataPoints[i].hatch_time, dataPoints[i].temperature);
+            printf("x(%d) = %.2f, y(%d) = %.2f\n", i, dataPoints[i].hatch_time, i, dataPoints[i].temperature);
     }
     printf("--------------------------------------\n");
     //Get y values for each data point

@@ -14,7 +14,11 @@ void main_menu(void) {
 
 // Clear screen (Windows / Linux / Mac)
 void clear_screen(void) {
+#ifdef _WIN32
     system("cls");
+#else
+    system("clear");
+#endif
 }
 
 // PAUSE

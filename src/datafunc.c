@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 // Helper function to check if temperature already exists in dataset
 static int find_existing_temp_index(Species *sp, float temp) {
@@ -112,13 +111,13 @@ void create_new_dataset(void) {
     int n;
     valid_input = 0;
     while (!valid_input) {
-        printf("\nEnter number of data points (minimum 4): ");
+        printf("\nEnter number of data points (minimum 2): ");
         if (fgets(input_buffer, sizeof(input_buffer), stdin) != NULL) {
             if (sscanf(input_buffer, "%d", &n) == 1) {
-                if (n >= 4 && n <= MAX_POINTS) {
+                if (n >= 2 && n <= MAX_POINTS) {
                     valid_input = 1;
                 } else {
-                    printf("Invalid number. Please enter a value between 4 and %d.\n", MAX_POINTS);
+                    printf("Invalid number. Please enter a value between 2 and %d.\n", MAX_POINTS);
                 }
             } else {
                 printf("Invalid input. Please enter a numeric value.\n");

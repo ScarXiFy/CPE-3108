@@ -137,7 +137,6 @@ void temp_calc(Species *sp, float time, int numOfPoints, DataPoint *dataPoints){
 float li(DataPoint *dataPoints, int numOfPoints, float unknown, int i, int mode){
     float product=1;
     float term;
-
     switch(mode){
         case 1:
             for(int j=0; j<numOfPoints; j++){
@@ -215,6 +214,20 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
     //Get Li(x) for each data point
     float lix[numOfPoints];
     printf("\n");
+    printf("\n\n");
+    printf("          n\n");
+    printf("        \\----|\n");
+    printf("f(x) =   \\       Li(x)f(xi)\n");
+    printf("         /   \n");
+    printf("        /----|\n");
+    printf("          i=0  \n\n");
+
+    printf("           n      ––        –– \n");
+    printf("        _______   | x  -  xj | \n");
+    printf("Li(x) =  |   |    |----------| \n");
+    printf("         |   |    | xi - xj  | \n");
+    printf("        j=0, j≠i  ––        –– \n\n");
+    printf("            \n\n\n");
     for(int i=0; i<numOfPoints; i++){
         lix[i] = li(dataPoints, numOfPoints, unknown_x, i, mode); 
         printf("L%d(x) = %.2f \n", i, lix[i]);

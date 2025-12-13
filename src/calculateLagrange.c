@@ -16,7 +16,7 @@ int sort_times(const void* a, const void* b) {
 
 void time_calc(Species *sp, float temp, int numOfPoints, DataPoint *dataPoints){
     //EXTRACT NEAREST POINTS
-    int polationMode; //0=inter, 1=min extrapolation, 2=max extrapolation
+    int polationMode; //0=interpolation, 1=min extrapolation, 2=max extrapolation
     
     if (temp < sp->data_points[0].temperature){
         polationMode = 1;
@@ -36,11 +36,11 @@ void time_calc(Species *sp, float temp, int numOfPoints, DataPoint *dataPoints){
     switch(polationMode){
         case 0:
             for(i=0; i<sp->data_count; i++){
-                absDistance[i]=fabs(sp->data_points[i].temperature - temp); //Get absolute distance between temperature to find and 
+                absDistance[i]=fabs(sp->data_points[i].temperature - temp); //Get absolute distance between temperatures in data set and given temperature 
             }
 
             for(i=0; i<sp->data_count; i++){
-                sortedIndex[i]=i;           //initialize index values corresponding to data point index. to be sorted according to distance 
+                sortedIndex[i]=i;           //initialize index values corresponding to data point index. to be sorted according to distance in ascending order
             }
 
             for(i=0; i<sp->data_count-1; i++){          //sort index according to ascending distance
@@ -73,19 +73,19 @@ void time_calc(Species *sp, float temp, int numOfPoints, DataPoint *dataPoints){
 }
 
 void temp_calc(Species *sp, float time, int numOfPoints, DataPoint *dataPoints){
-    //datapointsinitial[] //copy of original data points but sort according to time
-    DataPoint *dp_tempsorted = malloc(sizeof(DataPoint) * sp->data_count);
+    //Copy of original data points
+    DataPoint *dp_timesorted = malloc(sizeof(DataPoint) * sp->data_count);
     for(int i=0; i<sp->data_count; i++){
-        dp_tempsorted[i] = sp->data_points[i];
+        dp_timesorted[i] = sp->data_points[i];
     }
-    qsort(dp_tempsorted, sp->data_count, sizeof(DataPoint), sort_times); //sort data points in increasing order of time
+    qsort(dp_timesorted, sp->data_count, sizeof(DataPoint), sort_times); //Sort copy of data points in increasing order of time
 
-    int polationMode; //0=inter, 1=min extrapolation, 2=max extrapolation
+    int polationMode; //0=interpolation, 1=min extrapolation, 2=max extrapolation
     
-    if (time < dp_tempsorted[0].hatch_time){    //determine interpolation mode
+    if (time < dp_timesorted[0].hatch_time){    //Determine if interpolation, min or max extrapolation
         polationMode = 1;
     }
-    else if(time > dp_tempsorted[sp->data_count-1].hatch_time){
+    else if(time > dp_timesorted[sp->data_count-1].hatch_time){
         polationMode = 2;
     }
     else{
@@ -99,7 +99,7 @@ void temp_calc(Species *sp, float time, int numOfPoints, DataPoint *dataPoints){
     switch(polationMode){
         case 0:
             for(i=0; i<sp->data_count; i++){
-                absDistance[i]=fabs(dp_tempsorted[i].hatch_time - time); //Get absolute distance between temperature to find and 
+                absDistance[i]=fabs(dp_timesorted[i].hatch_time - time); //Get absolute distance between temperatures in data set and given temperature
             }
 
             for(i=0; i<sp->data_count; i++){
@@ -117,24 +117,24 @@ void temp_calc(Species *sp, float time, int numOfPoints, DataPoint *dataPoints){
             }
 
             for(i=0; i<numOfPoints; i++){        //initialize dataPoints to be used in calculations with datapoints closest to time to be checked
-                dataPoints[i] = dp_tempsorted[sortedIndex[i]];
+                dataPoints[i] = dp_timesorted[sortedIndex[i]];
             }
 
             break;
         case 1:
             for(i=0; i<numOfPoints; i++){
-                dataPoints[i] = dp_tempsorted[i];
+                dataPoints[i] = dp_timesorted[i];
             }
             break;
         case 2:
             starting_i = sp->data_count-numOfPoints;
             for(i=0; i < numOfPoints; i++){
-                dataPoints[i] = dp_tempsorted[starting_i + i];
+                dataPoints[i] = dp_timesorted[starting_i + i];
             }
             break;
     }
 
-    free(dp_tempsorted);
+    free(dp_timesorted);
 }
 
 float li(DataPoint *dataPoints, int numOfPoints, float unknown, int i, int mode){

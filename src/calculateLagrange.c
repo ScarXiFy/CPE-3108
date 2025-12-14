@@ -153,7 +153,7 @@ float li(DataPoint *dataPoints, int numOfPoints, float unknown, int i, int mode)
             for(int j=0; j<numOfPoints; j++){
                 if(i!=j){
                     term = (unknown - dataPoints[j].hatch_time)/(dataPoints[i].hatch_time - dataPoints[j].hatch_time);
-                    printf("(%.2f - %.2f)/(%.2f - %.2f)\n", unknown, dataPoints[j].hatch_time, dataPoints[i].hatch_time, dataPoints[j].hatch_time);
+                    printf("(%.2f - %.2f)/(%.2f - %.2f) * ", unknown, dataPoints[j].hatch_time, dataPoints[i].hatch_time, dataPoints[j].hatch_time);
                     product *= term;
                 }
             }

@@ -224,11 +224,11 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){  //unknwon_x = eith
     printf("        /----|\n");
     printf("          i=0  \n\n");
 
-    printf("           n      ––        –– \n");
+    printf("           n     ---        --- \n");
     printf("        _______   | x  -  xj | \n");
     printf("Li(x) =  |   |    |----------| \n");
     printf("         |   |    | xi - xj  | \n");
-    printf("        j=0, j≠i  ––        –– \n\n");
+    printf("       j=0, j!=i ---        --- \n\n");
     printf("------------------------------------------\n\n");
     for(int i=0; i<numOfPoints; i++){
         lix[i] = li(dataPoints, numOfPoints, unknown_x, i, mode); 

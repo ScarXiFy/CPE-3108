@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 int sort_times(const void* a, const void* b) {
     float time1 = ((DataPoint*)a)->hatch_time;
@@ -137,11 +138,13 @@ void temp_calc(Species *sp, float time, int numOfPoints, DataPoint *dataPoints){
 float li(DataPoint *dataPoints, int numOfPoints, float unknown, int i, int mode){
     float product=1;
     float term;
+    printf("\nL%d(%.2f) = ", i, unknown);
     switch(mode){
         case 1:
             for(int j=0; j<numOfPoints; j++){
                 if(i!=j){
                     term = (unknown - dataPoints[j].temperature)/(dataPoints[i].temperature - dataPoints[j].temperature);
+                    printf("(%.2f - %.2f)/(%.2f - %.2f) * ", unknown, dataPoints[j].temperature, dataPoints[i].temperature, dataPoints[j].temperature);
                     product *= term;
                 }
             }
@@ -150,16 +153,17 @@ float li(DataPoint *dataPoints, int numOfPoints, float unknown, int i, int mode)
             for(int j=0; j<numOfPoints; j++){
                 if(i!=j){
                     term = (unknown - dataPoints[j].hatch_time)/(dataPoints[i].hatch_time - dataPoints[j].hatch_time);
+                    printf("(%.2f - %.2f)/(%.2f - %.2f)\n", unknown, dataPoints[j].hatch_time, dataPoints[i].hatch_time, dataPoints[j].hatch_time);
                     product *= term;
                 }
             }
             break;
     }
-    
+    printf("\b\b  \n");
     return product;
 }
 
-float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either temp or time      mode 1 = given temp get time        mode 2 = given time get temp
+float lagrange_calc(Species *sp, float unknown_x, int mode){  //unknwon_x = either temp or time. mode 1: unknown_x=temp, find time. mode 2: unknown_x=time find temp
     char buffer[100];
     int numOfPoints;
     int valid_input = 0;
@@ -195,14 +199,14 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
             break;
     }
 
-    printf("\n\n--------DATA POINTS TO BE USED--------\n");
+    printf("\n\n----------DATA POINTS TO BE USED----------\n");
     for(int i=0; i<numOfPoints; i++){
         if(mode==1)
             printf("x(%d) = %.2f, y(%d) = %.2f\n", i, dataPoints[i].temperature, i, dataPoints[i].hatch_time);
         else
             printf("x(%d) = %.2f, y(%d) = %.2f\n", i, dataPoints[i].hatch_time, i, dataPoints[i].temperature);
     }
-    printf("--------------------------------------\n");
+    printf("------------------------------------------\n");
     //Get y values for each data point
     for(int i=0; i<numOfPoints; i++){ 
         if(mode==1)
@@ -214,7 +218,6 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
     //Get Li(x) for each data point
     float lix[numOfPoints];
     printf("\n");
-    printf("\n\n");
     printf("          n\n");
     printf("        \\----|\n");
     printf("f(x) =   \\       Li(x)f(xi)\n");
@@ -227,24 +230,24 @@ float lagrange_calc(Species *sp, float unknown_x, int mode){ //unknwon = either 
     printf("Li(x) =  |   |    |----------| \n");
     printf("         |   |    | xi - xj  | \n");
     printf("        j=0, j≠i  ––        –– \n\n");
-    printf("            \n\n\n");
+    printf("------------------------------------------\n\n");
     for(int i=0; i<numOfPoints; i++){
         lix[i] = li(dataPoints, numOfPoints, unknown_x, i, mode); 
-        printf("L%d(x) = %.2f \n", i, lix[i]);
+        printf("L%d(%.2f) = %.2f \n", i, unknown_x, lix[i]);
     }
     
-    //Display and calculate each term of the lagrange polynomial
+    //Display and calculate each term of f(x)
     float term[numOfPoints];
-    printf("\nf(x) = ");
+    printf("\n--------------------------------------------------------------------------------\n\nf(%.2f) = ", unknown_x);
     for(int i=0; i<numOfPoints; i++){
         printf(" (%.2f)(%.2f) +", lix[i], y[i]);
         term[i] = lix[i]*y[i];
     }
     printf("\b \n");
 
-    //Display and calculate the final lagrange polynomial
+    //Display and calculate the final result
     float fx = 0;
-    printf("\nf(x) = ");
+    printf("\nf(%.2f) = ", unknown_x);
     for(int i=0; i<numOfPoints; i++){
         printf(" %.2f +", term[i]);
         fx += term[i];

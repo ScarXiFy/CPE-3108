@@ -103,12 +103,6 @@ void create_new_dataset(void) {
         }
     }
 
-    if (sp->max_temp <= sp->min_temp) {
-        printf("\nInvalid Threshold. Max temperature must be greater than min temperature.\n");
-        pause_screen();
-        return;
-    }
-
     printf("\nTemperature Threshold: %.2f C to %.2f C\n",
            sp->min_temp, sp->max_temp);
 

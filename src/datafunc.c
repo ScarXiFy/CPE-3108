@@ -91,17 +91,16 @@ void create_new_dataset(void) {
         printf("Enter maximum allowed temperature (C): ");
         if (fgets(input_buffer, sizeof(input_buffer), stdin) != NULL) {
             if (sscanf(input_buffer, "%f", &sp->max_temp) == 1) {
-                valid_input = 1;
+                if (sp->max_temp <= sp->min_temp) {
+                    printf("Invalid Threshold. Max temperature must be greater than min temperature.\n");
+                }
+                else{
+                    valid_input = 1;
+                }
             } else {
                 printf("Invalid input. Please enter a numeric value.\n");
             }
         }
-    }
-
-    if (sp->max_temp <= sp->min_temp) {
-        printf("\nInvalid Threshold. Max temperature must be greater than min temperature.\n");
-        pause_screen();
-        return;
     }
 
     printf("\nTemperature Threshold: %.2f C to %.2f C\n",

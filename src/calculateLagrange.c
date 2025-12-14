@@ -1,5 +1,4 @@
 #include "main.h"
-#include <stdio.h>
 
 int sort_times(const void* a, const void* b) {
     float time1 = ((DataPoint*)a)->hatch_time;

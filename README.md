@@ -1,5 +1,5 @@
 # CPE-3108
-CPE 3108: Programming Project Adaptive Temperature and Hatch-Time Estimator Fish Egg Hatchery
+Programming Project Adaptive Temperature and Hatch-Time Estimator Fish Egg Hatchery
 
 A specialized command-line utility designed for fish hatchery management, providing precise estimates for egg hatching times based on environmental temperature using **Lagrange Interpolation**.
 
